@@ -25,13 +25,13 @@
                 ],
 
                 "SQL" => [
-                    "beginNoParse"   => ["'", '"', '`'],
-                    "endNoParse"     => ["'", '"', '`'],
+                    "beginNoParse"   => ["/*", "'", '"', '`'],
+                    "endNoParse"     => ["*/", "'", '"', '`'],
                     "beginRecursion" => ["("],
                     "endRecursion"   => [")"],
                     "newKeep"        => ["*", "+", "-", "/", ","],
                     "newSkip"        => [" ", "\t", "\n", "\r"],
-                    "discard"        => []
+                    "discard"        => ["/*"]
                 ],
 
                 "EQUATION" => [

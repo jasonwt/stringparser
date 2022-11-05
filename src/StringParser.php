@@ -1,9 +1,7 @@
 <?php
     namespace stringparser;
 
-    require_once(__DIR__ . "/StringParserType.php");
-
-    use stringparser\StringParserType;
+    require_once(__DIR__ . "/StringParserType.php");    
 
     class StringParser {
         protected $errors = [];
@@ -65,6 +63,41 @@
         protected function ClearErrors() {
             $this->errors = [];            
         }
+//
+        static public function UnparseArray(array $parsedArray, ?StringParserType $parsedStringType = null) : string {
+            $arraySymbols = [];
+
+            if (!is_null($parsedStringType)) {
+                $parsedStringTypeValue = $parsedStringType->Value();
+
+                for ($cnt = 0; $cnt < count($parsedStringTypeValue["beginRecursion"]); $cnt ++)
+                    $arraySymbols[$parsedStringTypeValue["beginRecursion"][$cnt]] = $parsedStringTypeValue["endRecursion"][$cnt];                    
+            }
+
+            $returnValue = "";
+
+            foreach ($parsedArray as $k => $v) {
+                if (is_array($v)) {
+                    $opening = "<ARRAY>";
+                    $closing = "</ARRAY>";
+
+                    if (isset($arraySymbols[$v["opening"]])) {
+                        $opening = $v["opening"];
+                        $closing = $v["closing"];
+                    }
+
+                    if (is_array($v["children"])) {
+                        $returnValue .= (($returnValue == "") ? "" : " ") . $opening . self::UnparseArray($v["children"], $parsedStringType) . $closing;
+                    } else {
+                        $returnValue .= (($returnValue == "") ? "" : " ") . $v["children"];
+                    }
+                } else {
+                    $returnValue .= (($returnValue == "") ? "" : " ") . $v;
+                }
+            }
+
+            return $returnValue;
+        }        
 //
         protected function ArrayFilter(array $arr, string $str) : ?string {
             $values = array_filter($arr, function ($v, $k) use($str) {
@@ -232,8 +265,6 @@
     
             if ($str != "")
                 $returnValue[] = $str;
-
-            echo "endKey: $endKey\n";
 
             if (is_null($endKey)) {
                 
